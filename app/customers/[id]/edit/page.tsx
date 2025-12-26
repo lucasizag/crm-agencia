@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { editCustomer } from "@/app/actions"
 import Link from "next/link"
 
+
 export default async function EditCustomerPage({ params }: { params: Promise<{ id: string }> }) {
   // 1. Desempaquetamos el ID de la URL
   const { id } = await params
