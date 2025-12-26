@@ -1,0 +1,67 @@
+// Configuración
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------------------------------------------
+// TUS TABLAS (MODELOS)
+// --------------------------------------------------------
+
+// 1. El Usuario (Admin)
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  
+  customers Customer[]
+}
+
+// 2. Los Clientes
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String
+  company   String?
+  email     String?
+  phone     String?
+  address     String?  // Dirección física
+  socialMedia String?  // Ej: @usuario en Instagram
+  
+  status    String   @default("ACTIVO")
+  
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  deals     Deal[]
+  createdAt DateTime @default(now())
+}
+
+// 3. Las Oportunidades de Venta (SOLO UNA VEZ)
+model Deal {
+  id          Int      @id @default(autoincrement())
+  title       String
+  amount      Float
+  stage       String   @default("NUEVO") // NUEVO, PROCESO, GANADO, PERDIDO
+  
+  customerId  Int
+  customer    Customer @relation(fields: [customerId], references: [id])
+  
+  createdAt   DateTime @default(now())
+
+  // Relación con las notas (NUEVO)
+  notes       Note[]
+}
+
+// 4. Las Notas / Historial (NUEVO)
+model Note {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  
+  dealId    Int
+  deal      Deal     @relation(fields: [dealId], references: [id])
+}
